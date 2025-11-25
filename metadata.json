@@ -1,0 +1,5 @@
+{
+  "name": "AuditFlow AI",
+  "description": "Agentic pipeline for automating medical device quality system audit reports using Google Gemini.",
+  "requestFramePermissions": []
+}
