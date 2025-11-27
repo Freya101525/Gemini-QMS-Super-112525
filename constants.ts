@@ -111,6 +111,7 @@ export const UI_LABELS = {
     pipeline: 'Pipeline',
     dashboard: 'Dashboard',
     smartReplace: 'Smart Replace',
+    noteKeeper: 'Note Keeper',
     markdownTemplate: 'Markdown Template',
     rawObservations: 'Raw Observations',
     agentSequence: 'Pipeline Sequence',
@@ -131,7 +132,17 @@ export const UI_LABELS = {
     listB: 'List B (Data)',
     executeReplace: 'Execute Replacement',
     preview: 'Preview',
-    raw: 'Raw Markdown'
+    raw: 'Raw Markdown',
+    // Note Keeper
+    nkTitle: 'AI Note Keeper',
+    nkDesc: 'Transform, format, and analyze your text notes with AI.',
+    nkFormat: 'AI Formatting',
+    nkKeywords: 'AI Keywords',
+    nkEntities: 'AI Entities',
+    nkChat: 'AI Chat',
+    nkMindmap: 'AI Mindmap',
+    nkInputPlaceholder: 'Paste your unstructured note text here...',
+    nkChatPlaceholder: 'Ask a question about your note...',
   },
   zh: {
     title: 'AuditFlow AI 稽核流',
@@ -146,6 +157,7 @@ export const UI_LABELS = {
     pipeline: '執行流程',
     dashboard: '儀表板',
     smartReplace: '智慧置換',
+    noteKeeper: 'AI 筆記助手',
     markdownTemplate: 'Markdown 模板',
     rawObservations: '原始觀察紀錄',
     agentSequence: '代理人序列',
@@ -166,6 +178,16 @@ export const UI_LABELS = {
     listB: '清單 B (資料)',
     executeReplace: '執行置換',
     preview: '預覽',
-    raw: '原始 Markdown'
+    raw: '原始 Markdown',
+    // Note Keeper
+    nkTitle: 'AI 筆記助手',
+    nkDesc: '使用 AI 轉換、格式化並分析您的文字筆記。',
+    nkFormat: 'AI 格式化',
+    nkKeywords: 'AI 關鍵字',
+    nkEntities: 'AI 實體識別',
+    nkChat: 'AI 對話',
+    nkMindmap: 'AI 心智圖',
+    nkInputPlaceholder: '在此貼上您的非結構化筆記文字...',
+    nkChatPlaceholder: '詢問關於您筆記的問題...',
   }
 };

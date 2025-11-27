@@ -60,3 +60,17 @@ export interface SmartReplaceState {
   isProcessing: boolean;
   error: string | null;
 }
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  content: string;
+}
+
+export interface NoteKeeperState {
+  inputText: string;
+  outputText: string;
+  mode: 'markdown' | 'chat' | 'json';
+  chatHistory: ChatMessage[];
+  isLoading: boolean;
+  activeAction: string | null; // 'format' | 'keywords' | 'entities' | 'mindmap' | 'chat'
+}

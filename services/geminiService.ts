@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { AgentConfig, AgentRunState } from "../types";
+import { AgentConfig, AgentRunState, ChatMessage } from "../types";
 import { BASE_SYSTEM_PROMPT_ZH } from "../constants";
 
 interface GenerateContentParams {
@@ -145,3 +145,87 @@ export const generateSmartReplacement = async ({
     return { text: '', error: e.message };
   }
 };
+
+// --- Note Keeper Services ---
+
+interface NoteKeeperParams {
+  apiKey: string;
+  text: string;
+  action: 'format' | 'keywords' | 'entities' | 'mindmap';
+  meta?: { keywords?: string; color?: string };
+}
+
+export const generateNoteAction = async ({
+  apiKey,
+  text,
+  action,
+  meta
+}: NoteKeeperParams): Promise<{ text: string; error?: string }> => {
+  if (!apiKey) return { text: '', error: 'API Key Missing' };
+
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    let systemInstruction = '';
+    let prompt = '';
+
+    switch (action) {
+      case 'format':
+        systemInstruction = 'You are an expert editor. Organize the text into clean, structured Markdown. Use Headers, Bullet Points, and Bold text for emphasis. DO NOT summarize or remove any information. Keep ALL original content, just make it readable.';
+        prompt = `Format the following text:\n\n${text}`;
+        break;
+
+      case 'keywords':
+        systemInstruction = `You are a text highlighter. You must find the specific keywords provided by the user in the text and wrap them in HTML span tags with the color: ${meta?.color || 'yellow'}. Example: <span style="color: ${meta?.color || 'yellow'}">keyword</span>. Return the FULL text in Markdown, with the highlights applied.`;
+        prompt = `Keywords to highlight: ${meta?.keywords}\n\nText:\n${text}`;
+        break;
+
+      case 'entities':
+        systemInstruction = 'Extract the top 20 most important entities from the text. Return ONLY a Markdown Table with columns: | Entity | Type | Context |. Do not add conversational text.';
+        prompt = `Extract entities from:\n\n${text}`;
+        break;
+      
+      case 'mindmap':
+        systemInstruction = 'Analyze the relationships in the text. Return strictly valid JSON compatible with Python NetworkX node-link format. Structure: { "nodes": [{"id": "Name"}], "links": [{"source": "Name", "target": "Name", "relationship": "label"}] }. Do not wrap in markdown code blocks, just return raw JSON.';
+        prompt = `Create a network graph JSON from:\n\n${text}`;
+        break;
+    }
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        systemInstruction,
+        temperature: 0.1,
+      }
+    });
+
+    return { text: response.text || '' };
+
+  } catch (e: any) {
+    return { text: '', error: e.message };
+  }
+};
+
+export const chatWithNote = async (apiKey: string, history: ChatMessage[], contextText: string): Promise<string> => {
+  if (!apiKey) return 'Error: API Key Missing';
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    const chat = ai.chats.create({
+      model: 'gemini-2.5-flash',
+      config: {
+        systemInstruction: `You are a helpful assistant. Answer the user's questions based strictly on the following context note:\n\n${contextText}\n\nIf the answer is not in the note, say so.`
+      },
+      history: history.slice(0, -1).map(h => ({
+        role: h.role,
+        parts: [{ text: h.content }]
+      }))
+    });
+
+    const lastMsg = history[history.length - 1].content;
+    const result = await chat.sendMessage({ message: lastMsg });
+    return result.text;
+
+  } catch (e: any) {
+    return `Error: ${e.message}`;
+  }
+}

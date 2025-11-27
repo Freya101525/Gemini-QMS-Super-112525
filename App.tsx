@@ -3,13 +3,15 @@ import {
   FileInput, 
   Workflow, 
   LayoutDashboard,
-  Replace
+  Replace,
+  BookOpen
 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import InputTab from './components/InputTab';
 import PipelineTab from './components/PipelineTab';
 import DashboardTab from './components/DashboardTab';
 import SmartReplaceTab from './components/SmartReplaceTab';
+import NoteKeeperTab from './components/NoteKeeperTab';
 import { AgentConfig, PipelineState, LogEntry, Language } from './types';
 import { FLOWER_THEMES, DEFAULT_AGENTS, MOCK_TEMPLATE, MOCK_OBSERVATIONS, UI_LABELS } from './constants';
 
@@ -21,7 +23,7 @@ const App: React.FC = () => {
   const [currentThemeId, setThemeId] = useState<string>('sakura');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [language, setLanguage] = useState<Language>('en');
-  const [activeTab, setActiveTab] = useState<'input' | 'pipeline' | 'dashboard' | 'smart_replace'>('input');
+  const [activeTab, setActiveTab] = useState<'input' | 'pipeline' | 'dashboard' | 'smart_replace' | 'note_keeper'>('input');
   
   // --- Pipeline State ---
   const [pipelineState, setPipelineState] = useState<PipelineState>({
@@ -84,10 +86,10 @@ const App: React.FC = () => {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         
         {/* Navigation Tabs */}
-        <div className={`flex items-center px-4 pt-2 border-b ${isDarkMode ? 'border-[#333]' : 'border-gray-200'}`}>
+        <div className={`flex items-center px-4 pt-2 border-b overflow-x-auto ${isDarkMode ? 'border-[#333]' : 'border-gray-200'}`}>
           <button
             onClick={() => setActiveTab('input')}
-            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all whitespace-nowrap ${
               activeTab === 'input' 
                 ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
                 : 'border-transparent text-gray-400 hover:text-gray-500'
@@ -97,7 +99,7 @@ const App: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all whitespace-nowrap ${
               activeTab === 'pipeline' 
                 ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
                 : 'border-transparent text-gray-400 hover:text-gray-500'
@@ -107,7 +109,7 @@ const App: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('smart_replace')}
-            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all whitespace-nowrap ${
               activeTab === 'smart_replace' 
                 ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
                 : 'border-transparent text-gray-400 hover:text-gray-500'
@@ -116,8 +118,18 @@ const App: React.FC = () => {
             <Replace className="w-4 h-4" /> {labels.smartReplace}
           </button>
           <button
+            onClick={() => setActiveTab('note_keeper')}
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all whitespace-nowrap ${
+              activeTab === 'note_keeper' 
+                ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
+                : 'border-transparent text-gray-400 hover:text-gray-500'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" /> {labels.noteKeeper}
+          </button>
+          <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium transition-all whitespace-nowrap ${
               activeTab === 'dashboard' 
                 ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
                 : 'border-transparent text-gray-400 hover:text-gray-500'
@@ -147,6 +159,14 @@ const App: React.FC = () => {
           )}
           {activeTab === 'smart_replace' && (
             <SmartReplaceTab
+                apiKey={apiKey}
+                language={language}
+                isDarkMode={isDarkMode}
+                addLog={addLog}
+            />
+          )}
+          {activeTab === 'note_keeper' && (
+            <NoteKeeperTab 
                 apiKey={apiKey}
                 language={language}
                 isDarkMode={isDarkMode}
